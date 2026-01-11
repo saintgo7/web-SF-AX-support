@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, Badge, Input, Select, Table, Button } from '@/components/ui';
+import { Column } from '@/components/ui/Table';
 
 interface Consultant {
   id: string;
@@ -52,7 +53,7 @@ const mockConsultants: Consultant[] = [
 ];
 
 export default function ConsultantsPage() {
-  const [consultants, setConsultants] = useState<Consultant[]>(mockConsultants);
+  const [consultants] = useState<Consultant[]>(mockConsultants);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
@@ -79,6 +80,56 @@ export default function ConsultantsPage() {
     }
   };
 
+  const columns: Column<Consultant>[] = [
+    {
+      key: 'name',
+      header: '이름',
+      render: (_, row) => (
+        <div>
+          <div className="font-medium">{row.name}</div>
+          <div className="text-sm text-gray-500">{row.email}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'org_name',
+      header: '소속기관',
+    },
+    {
+      key: 'specialties',
+      header: '전문분야',
+      render: (value) => (
+        <div className="flex gap-1 flex-wrap">
+          {(value as string[]).map((s) => (
+            <Badge key={s} variant="secondary">
+              {s}
+            </Badge>
+          ))}
+        </div>
+      ),
+    },
+    {
+      key: 'career_years',
+      header: '경력',
+      render: (value) => `${value}년`,
+    },
+    {
+      key: 'qualification_status',
+      header: '자격상태',
+      render: (value) => getStatusBadge(value as string),
+    },
+    {
+      key: 'matching_count',
+      header: '매칭수',
+      render: (value) => `${value}건`,
+    },
+    {
+      key: 'avg_score',
+      header: '평균점수',
+      render: (value) => (value as number) > 0 ? `${value}점` : '-',
+    },
+  ];
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -90,34 +141,42 @@ export default function ConsultantsPage() {
 
       {/* 통계 카드 */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">전체 컨설턴트</div>
-          <div className="text-2xl font-bold text-blue-600">{consultants.length}명</div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">자격인증 완료</div>
-          <div className="text-2xl font-bold text-green-600">
-            {consultants.filter((c) => c.qualification_status === 'QUALIFIED').length}명
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">전체 컨설턴트</div>
+            <div className="text-2xl font-bold text-blue-600">{consultants.length}명</div>
           </div>
         </Card>
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">심사중</div>
-          <div className="text-2xl font-bold text-yellow-600">
-            {consultants.filter((c) => c.qualification_status === 'PENDING').length}명
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">자격인증 완료</div>
+            <div className="text-2xl font-bold text-green-600">
+              {consultants.filter((c) => c.qualification_status === 'QUALIFIED').length}명
+            </div>
           </div>
         </Card>
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">평균 평가점수</div>
-          <div className="text-2xl font-bold text-purple-600">
-            {(consultants.filter(c => c.avg_score > 0).reduce((sum, c) => sum + c.avg_score, 0) /
-              consultants.filter(c => c.avg_score > 0).length || 0).toFixed(1)}점
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">심사중</div>
+            <div className="text-2xl font-bold text-yellow-600">
+              {consultants.filter((c) => c.qualification_status === 'PENDING').length}명
+            </div>
+          </div>
+        </Card>
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">평균 평가점수</div>
+            <div className="text-2xl font-bold text-purple-600">
+              {(consultants.filter(c => c.avg_score > 0).reduce((sum, c) => sum + c.avg_score, 0) /
+                consultants.filter(c => c.avg_score > 0).length || 0).toFixed(1)}점
+            </div>
           </div>
         </Card>
       </div>
 
       {/* 필터 */}
-      <Card className="p-4">
-        <div className="flex gap-4">
+      <Card>
+        <div className="p-4 flex gap-4">
           <div className="flex-1">
             <Input
               placeholder="이름, 이메일, 소속기관으로 검색..."
@@ -140,53 +199,14 @@ export default function ConsultantsPage() {
 
       {/* 컨설턴트 목록 */}
       <Card>
-        <Table>
-          <Table.Head>
-            <Table.Row>
-              <Table.Header>이름</Table.Header>
-              <Table.Header>소속기관</Table.Header>
-              <Table.Header>전문분야</Table.Header>
-              <Table.Header>경력</Table.Header>
-              <Table.Header>자격상태</Table.Header>
-              <Table.Header>매칭수</Table.Header>
-              <Table.Header>평균점수</Table.Header>
-              <Table.Header>상세</Table.Header>
-            </Table.Row>
-          </Table.Head>
-          <Table.Body>
-            {filteredConsultants.map((consultant) => (
-              <Table.Row key={consultant.id}>
-                <Table.Cell>
-                  <div>
-                    <div className="font-medium">{consultant.name}</div>
-                    <div className="text-sm text-gray-500">{consultant.email}</div>
-                  </div>
-                </Table.Cell>
-                <Table.Cell>{consultant.org_name}</Table.Cell>
-                <Table.Cell>
-                  <div className="flex gap-1 flex-wrap">
-                    {consultant.specialties.map((s) => (
-                      <Badge key={s} variant="secondary" size="sm">
-                        {s}
-                      </Badge>
-                    ))}
-                  </div>
-                </Table.Cell>
-                <Table.Cell>{consultant.career_years}년</Table.Cell>
-                <Table.Cell>{getStatusBadge(consultant.qualification_status)}</Table.Cell>
-                <Table.Cell>{consultant.matching_count}건</Table.Cell>
-                <Table.Cell>
-                  {consultant.avg_score > 0 ? `${consultant.avg_score}점` : '-'}
-                </Table.Cell>
-                <Table.Cell>
-                  <Button variant="outline" size="sm">
-                    상세보기
-                  </Button>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
+        <div className="p-4">
+          <Table
+            columns={columns}
+            data={filteredConsultants}
+            keyField="id"
+            emptyMessage="등록된 컨설턴트가 없습니다."
+          />
+        </div>
       </Card>
     </div>
   );

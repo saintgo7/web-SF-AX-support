@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, Badge, Input, Select, Table, Button } from '@/components/ui';
+import { Card, Badge, Input, Select, Table } from '@/components/ui';
+import { Column } from '@/components/ui/Table';
 
 interface Matching {
   id: string;
@@ -58,7 +59,7 @@ const mockMatchings: Matching[] = [
 ];
 
 export default function MatchingPage() {
-  const [matchings, setMatchings] = useState<Matching[]>(mockMatchings);
+  const [matchings] = useState<Matching[]>(mockMatchings);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -94,6 +95,49 @@ export default function MatchingPage() {
     return 'text-gray-600';
   };
 
+  const columns: Column<Matching>[] = [
+    {
+      key: 'consultant_name',
+      header: '컨설턴트',
+    },
+    {
+      key: 'company_name',
+      header: '기업명',
+    },
+    {
+      key: 'company_industry',
+      header: '업종',
+    },
+    {
+      key: 'match_score',
+      header: '매칭점수',
+      render: (value) => (
+        <span className={`font-bold ${getMatchScoreColor(value as number)}`}>
+          {value}점
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      header: '상태',
+      render: (value) => getStatusBadge(value as string),
+    },
+    {
+      key: 'created_at',
+      header: '등록일',
+    },
+    {
+      key: 'start_date',
+      header: '시작일',
+      render: (value) => value || '-',
+    },
+    {
+      key: 'end_date',
+      header: '종료일',
+      render: (value) => value || '-',
+    },
+  ];
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -105,39 +149,49 @@ export default function MatchingPage() {
 
       {/* 통계 카드 */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">전체 매칭</div>
-          <div className="text-2xl font-bold text-blue-600">{matchings.length}건</div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">제안됨</div>
-          <div className="text-2xl font-bold text-gray-600">
-            {matchings.filter((m) => m.status === 'PROPOSED').length}건
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">전체 매칭</div>
+            <div className="text-2xl font-bold text-blue-600">{matchings.length}건</div>
           </div>
         </Card>
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">진행중</div>
-          <div className="text-2xl font-bold text-yellow-600">
-            {matchings.filter((m) => m.status === 'IN_PROGRESS').length}건
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">제안됨</div>
+            <div className="text-2xl font-bold text-gray-600">
+              {matchings.filter((m) => m.status === 'PROPOSED').length}건
+            </div>
           </div>
         </Card>
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">완료</div>
-          <div className="text-2xl font-bold text-green-600">
-            {matchings.filter((m) => m.status === 'COMPLETED').length}건
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">진행중</div>
+            <div className="text-2xl font-bold text-yellow-600">
+              {matchings.filter((m) => m.status === 'IN_PROGRESS').length}건
+            </div>
           </div>
         </Card>
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">평균 매칭점수</div>
-          <div className="text-2xl font-bold text-purple-600">
-            {(matchings.reduce((sum, m) => sum + m.match_score, 0) / matchings.length).toFixed(1)}점
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">완료</div>
+            <div className="text-2xl font-bold text-green-600">
+              {matchings.filter((m) => m.status === 'COMPLETED').length}건
+            </div>
+          </div>
+        </Card>
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">평균 매칭점수</div>
+            <div className="text-2xl font-bold text-purple-600">
+              {(matchings.reduce((sum, m) => sum + m.match_score, 0) / matchings.length).toFixed(1)}점
+            </div>
           </div>
         </Card>
       </div>
 
       {/* 필터 */}
-      <Card className="p-4">
-        <div className="flex gap-4">
+      <Card>
+        <div className="p-4 flex gap-4">
           <div className="flex-1">
             <Input
               placeholder="컨설턴트명, 기업명으로 검색..."
@@ -162,44 +216,14 @@ export default function MatchingPage() {
 
       {/* 매칭 목록 */}
       <Card>
-        <Table>
-          <Table.Head>
-            <Table.Row>
-              <Table.Header>컨설턴트</Table.Header>
-              <Table.Header>기업명</Table.Header>
-              <Table.Header>업종</Table.Header>
-              <Table.Header>매칭점수</Table.Header>
-              <Table.Header>상태</Table.Header>
-              <Table.Header>등록일</Table.Header>
-              <Table.Header>시작일</Table.Header>
-              <Table.Header>종료일</Table.Header>
-              <Table.Header>상세</Table.Header>
-            </Table.Row>
-          </Table.Head>
-          <Table.Body>
-            {filteredMatchings.map((matching) => (
-              <Table.Row key={matching.id}>
-                <Table.Cell className="font-medium">{matching.consultant_name}</Table.Cell>
-                <Table.Cell>{matching.company_name}</Table.Cell>
-                <Table.Cell>{matching.company_industry}</Table.Cell>
-                <Table.Cell>
-                  <span className={`font-bold ${getMatchScoreColor(matching.match_score)}`}>
-                    {matching.match_score}점
-                  </span>
-                </Table.Cell>
-                <Table.Cell>{getStatusBadge(matching.status)}</Table.Cell>
-                <Table.Cell>{matching.created_at}</Table.Cell>
-                <Table.Cell>{matching.start_date || '-'}</Table.Cell>
-                <Table.Cell>{matching.end_date || '-'}</Table.Cell>
-                <Table.Cell>
-                  <Button variant="outline" size="sm">
-                    상세보기
-                  </Button>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
+        <div className="p-4">
+          <Table
+            columns={columns}
+            data={filteredMatchings}
+            keyField="id"
+            emptyMessage="매칭 기록이 없습니다."
+          />
+        </div>
       </Card>
     </div>
   );

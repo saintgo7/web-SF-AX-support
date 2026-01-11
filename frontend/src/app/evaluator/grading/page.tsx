@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, Badge, Input, Select, Table, Button } from '@/components/ui';
+import { Column } from '@/components/ui/Table';
 
 interface GradingItem {
   id: string;
@@ -68,7 +69,7 @@ const mockGradingItems: GradingItem[] = [
 ];
 
 export default function GradingPage() {
-  const [items, setItems] = useState<GradingItem[]>(mockGradingItems);
+  const [items] = useState<GradingItem[]>(mockGradingItems);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'pending' | 'completed'>('pending');
@@ -114,6 +115,70 @@ export default function GradingPage() {
     }
   };
 
+  const baseColumns: Column<GradingItem>[] = [
+    {
+      key: 'consultant_name',
+      header: '컨설턴트',
+      render: (value) => <span className="font-medium">{value as string}</span>,
+    },
+    {
+      key: 'question_category',
+      header: '평가영역',
+    },
+    {
+      key: 'question_type',
+      header: '문항유형',
+      render: (value) => getTypeBadge(value as string),
+    },
+    {
+      key: 'submitted_at',
+      header: '제출시간',
+    },
+    {
+      key: 'status',
+      header: '상태',
+      render: (value) => getStatusBadge(value as string),
+    },
+  ];
+
+  const completedColumns: Column<GradingItem>[] = [
+    {
+      key: 'score',
+      header: '점수',
+      render: (value, row) => (
+        <span className="font-bold text-blue-600">
+          {value}/{row.max_score}
+        </span>
+      ),
+    },
+    {
+      key: 'graded_at',
+      header: '채점시간',
+    },
+  ];
+
+  const actionColumn: Column<GradingItem>[] = [
+    {
+      key: 'id',
+      header: '작업',
+      render: () => (
+        <Button
+          variant={activeTab === 'pending' ? 'primary' : 'outline'}
+          size="sm"
+        >
+          {activeTab === 'pending' ? '채점하기' : '상세보기'}
+        </Button>
+      ),
+    },
+  ];
+
+  const columns = useMemo(() => {
+    if (activeTab === 'completed') {
+      return [...baseColumns, ...completedColumns, ...actionColumn];
+    }
+    return [...baseColumns, ...actionColumn];
+  }, [activeTab]);
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -122,22 +187,30 @@ export default function GradingPage() {
 
       {/* 통계 카드 */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">전체 답변</div>
-          <div className="text-2xl font-bold text-blue-600">{items.length}건</div>
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">전체 답변</div>
+            <div className="text-2xl font-bold text-blue-600">{items.length}건</div>
+          </div>
         </Card>
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">채점 대기</div>
-          <div className="text-2xl font-bold text-yellow-600">{pendingCount}건</div>
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">채점 대기</div>
+            <div className="text-2xl font-bold text-yellow-600">{pendingCount}건</div>
+          </div>
         </Card>
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">채점 완료</div>
-          <div className="text-2xl font-bold text-green-600">{completedCount}건</div>
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">채점 완료</div>
+            <div className="text-2xl font-bold text-green-600">{completedCount}건</div>
+          </div>
         </Card>
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">완료율</div>
-          <div className="text-2xl font-bold text-purple-600">
-            {((completedCount / items.length) * 100).toFixed(0)}%
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">완료율</div>
+            <div className="text-2xl font-bold text-purple-600">
+              {((completedCount / items.length) * 100).toFixed(0)}%
+            </div>
           </div>
         </Card>
       </div>
@@ -167,8 +240,8 @@ export default function GradingPage() {
       </div>
 
       {/* 필터 */}
-      <Card className="p-4">
-        <div className="flex gap-4">
+      <Card>
+        <div className="p-4 flex gap-4">
           <div className="flex-1">
             <Input
               placeholder="컨설턴트명으로 검색..."
@@ -192,59 +265,18 @@ export default function GradingPage() {
 
       {/* 채점 목록 */}
       <Card>
-        <Table>
-          <Table.Head>
-            <Table.Row>
-              <Table.Header>컨설턴트</Table.Header>
-              <Table.Header>평가영역</Table.Header>
-              <Table.Header>문항유형</Table.Header>
-              <Table.Header>제출시간</Table.Header>
-              <Table.Header>상태</Table.Header>
-              {activeTab === 'completed' && (
-                <>
-                  <Table.Header>점수</Table.Header>
-                  <Table.Header>채점시간</Table.Header>
-                </>
-              )}
-              <Table.Header>작업</Table.Header>
-            </Table.Row>
-          </Table.Head>
-          <Table.Body>
-            {filteredItems.map((item) => (
-              <Table.Row key={item.id}>
-                <Table.Cell className="font-medium">{item.consultant_name}</Table.Cell>
-                <Table.Cell>{item.question_category}</Table.Cell>
-                <Table.Cell>{getTypeBadge(item.question_type)}</Table.Cell>
-                <Table.Cell>{item.submitted_at}</Table.Cell>
-                <Table.Cell>{getStatusBadge(item.status)}</Table.Cell>
-                {activeTab === 'completed' && (
-                  <>
-                    <Table.Cell>
-                      <span className="font-bold text-blue-600">
-                        {item.score}/{item.max_score}
-                      </span>
-                    </Table.Cell>
-                    <Table.Cell>{item.graded_at}</Table.Cell>
-                  </>
-                )}
-                <Table.Cell>
-                  <Button
-                    variant={activeTab === 'pending' ? 'primary' : 'outline'}
-                    size="sm"
-                  >
-                    {activeTab === 'pending' ? '채점하기' : '상세보기'}
-                  </Button>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-
-        {filteredItems.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            {activeTab === 'pending' ? '채점 대기 중인 항목이 없습니다.' : '채점 완료된 항목이 없습니다.'}
-          </div>
-        )}
+        <div className="p-4">
+          <Table
+            columns={columns}
+            data={filteredItems}
+            keyField="id"
+            emptyMessage={
+              activeTab === 'pending'
+                ? '채점 대기 중인 항목이 없습니다.'
+                : '채점 완료된 항목이 없습니다.'
+            }
+          />
+        </div>
       </Card>
     </div>
   );

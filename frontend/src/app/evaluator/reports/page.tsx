@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, Badge, Input, Select, Table, Button, Modal, Textarea } from '@/components/ui';
+import { Card, Badge, Input, Select, Table, Button, Modal } from '@/components/ui';
+import { Column } from '@/components/ui/Table';
 
 interface Report {
   id: string;
@@ -60,7 +61,7 @@ const mockReports: Report[] = [
 ];
 
 export default function ReportsPage() {
-  const [reports, setReports] = useState<Report[]>(mockReports);
+  const [reports] = useState<Report[]>(mockReports);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -105,6 +106,62 @@ export default function ReportsPage() {
     }
   };
 
+  const columns: Column<Report>[] = [
+    {
+      key: 'title',
+      header: '제목',
+      render: (value) => <span className="font-medium">{value as string}</span>,
+    },
+    {
+      key: 'report_type',
+      header: '유형',
+      render: (value) => getTypeBadge(value as string),
+    },
+    {
+      key: 'consultant_name',
+      header: '컨설턴트',
+      render: (value) => value || '-',
+    },
+    {
+      key: 'company_name',
+      header: '기업',
+      render: (value) => value || '-',
+    },
+    {
+      key: 'status',
+      header: '상태',
+      render: (value) => getStatusBadge(value as string),
+    },
+    {
+      key: 'author',
+      header: '작성자',
+    },
+    {
+      key: 'created_at',
+      header: '작성일',
+    },
+    {
+      key: 'updated_at',
+      header: '수정일',
+    },
+    {
+      key: 'id',
+      header: '작업',
+      render: (_, row) => (
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm">
+            {row.status === 'DRAFT' ? '편집' : '보기'}
+          </Button>
+          {row.status === 'APPROVED' && (
+            <Button variant="secondary" size="sm">
+              PDF
+            </Button>
+          )}
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
@@ -116,33 +173,41 @@ export default function ReportsPage() {
 
       {/* 통계 카드 */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">전체 보고서</div>
-          <div className="text-2xl font-bold text-blue-600">{reports.length}건</div>
-        </Card>
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">작성중</div>
-          <div className="text-2xl font-bold text-gray-600">
-            {reports.filter((r) => r.status === 'DRAFT').length}건
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">전체 보고서</div>
+            <div className="text-2xl font-bold text-blue-600">{reports.length}건</div>
           </div>
         </Card>
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">제출됨</div>
-          <div className="text-2xl font-bold text-blue-600">
-            {reports.filter((r) => r.status === 'SUBMITTED').length}건
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">작성중</div>
+            <div className="text-2xl font-bold text-gray-600">
+              {reports.filter((r) => r.status === 'DRAFT').length}건
+            </div>
           </div>
         </Card>
-        <Card className="p-4">
-          <div className="text-sm text-gray-500">승인됨</div>
-          <div className="text-2xl font-bold text-green-600">
-            {reports.filter((r) => r.status === 'APPROVED').length}건
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">제출됨</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {reports.filter((r) => r.status === 'SUBMITTED').length}건
+            </div>
+          </div>
+        </Card>
+        <Card>
+          <div className="p-4">
+            <div className="text-sm text-gray-500">승인됨</div>
+            <div className="text-2xl font-bold text-green-600">
+              {reports.filter((r) => r.status === 'APPROVED').length}건
+            </div>
           </div>
         </Card>
       </div>
 
       {/* 필터 */}
-      <Card className="p-4">
-        <div className="flex gap-4">
+      <Card>
+        <div className="p-4 flex gap-4">
           <div className="flex-1">
             <Input
               placeholder="제목, 컨설턴트, 기업명으로 검색..."
@@ -176,47 +241,14 @@ export default function ReportsPage() {
 
       {/* 보고서 목록 */}
       <Card>
-        <Table>
-          <Table.Head>
-            <Table.Row>
-              <Table.Header>제목</Table.Header>
-              <Table.Header>유형</Table.Header>
-              <Table.Header>컨설턴트</Table.Header>
-              <Table.Header>기업</Table.Header>
-              <Table.Header>상태</Table.Header>
-              <Table.Header>작성자</Table.Header>
-              <Table.Header>작성일</Table.Header>
-              <Table.Header>수정일</Table.Header>
-              <Table.Header>작업</Table.Header>
-            </Table.Row>
-          </Table.Head>
-          <Table.Body>
-            {filteredReports.map((report) => (
-              <Table.Row key={report.id}>
-                <Table.Cell className="font-medium">{report.title}</Table.Cell>
-                <Table.Cell>{getTypeBadge(report.report_type)}</Table.Cell>
-                <Table.Cell>{report.consultant_name || '-'}</Table.Cell>
-                <Table.Cell>{report.company_name || '-'}</Table.Cell>
-                <Table.Cell>{getStatusBadge(report.status)}</Table.Cell>
-                <Table.Cell>{report.author}</Table.Cell>
-                <Table.Cell>{report.created_at}</Table.Cell>
-                <Table.Cell>{report.updated_at}</Table.Cell>
-                <Table.Cell>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      {report.status === 'DRAFT' ? '편집' : '보기'}
-                    </Button>
-                    {report.status === 'APPROVED' && (
-                      <Button variant="secondary" size="sm">
-                        PDF
-                      </Button>
-                    )}
-                  </div>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
+        <div className="p-4">
+          <Table
+            columns={columns}
+            data={filteredReports}
+            keyField="id"
+            emptyMessage="등록된 보고서가 없습니다."
+          />
+        </div>
       </Card>
 
       {/* 새 보고서 작성 모달 */}
