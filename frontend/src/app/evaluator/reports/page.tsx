@@ -1,52 +1,56 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, Badge, Input, Select, Table, Button, Modal } from '@/components/ui';
+import { useRouter } from 'next/navigation';
+import { Card, Badge, Input, Select, Table, Button } from '@/components/ui';
 import { Column } from '@/components/ui/Table';
-
-interface Report {
-  id: string;
-  title: string;
-  report_type: 'CONSULTING' | 'EVALUATION' | 'SUMMARY';
-  consultant_name?: string;
-  company_name?: string;
-  status: 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
-  created_at: string;
-  updated_at: string;
-  author: string;
-}
+import {
+  Report,
+  ReportType,
+  ReportStatus,
+  REPORT_TYPE_LABELS,
+  REPORT_STATUS_LABELS,
+} from '@/types/report';
 
 const mockReports: Report[] = [
   {
     id: '1',
     title: '(주)스마트제조 AX 컨설팅 보고서',
     report_type: 'CONSULTING',
+    consultant_id: '1',
     consultant_name: '김철수',
+    company_id: '1',
     company_name: '(주)스마트제조',
     status: 'SUBMITTED',
     created_at: '2026-01-10',
     updated_at: '2026-01-10',
+    author_id: '1',
     author: '홍길동',
   },
   {
     id: '2',
     title: '대한전자 AX 컨설팅 최종 보고서',
     report_type: 'CONSULTING',
+    consultant_id: '2',
     consultant_name: '이영희',
+    company_id: '2',
     company_name: '대한전자',
     status: 'APPROVED',
     created_at: '2026-01-05',
     updated_at: '2026-01-08',
+    author_id: '1',
     author: '홍길동',
   },
   {
     id: '3',
     title: '김철수 컨설턴트 평가 보고서',
     report_type: 'EVALUATION',
+    consultant_id: '1',
     consultant_name: '김철수',
     status: 'DRAFT',
     created_at: '2026-01-11',
     updated_at: '2026-01-11',
+    author_id: '1',
     author: '홍길동',
   },
   {
@@ -56,17 +60,17 @@ const mockReports: Report[] = [
     status: 'DRAFT',
     created_at: '2026-01-11',
     updated_at: '2026-01-11',
+    author_id: '1',
     author: '홍길동',
   },
 ];
 
 export default function ReportsPage() {
+  const router = useRouter();
   const [reports] = useState<Report[]>(mockReports);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [newReportType, setNewReportType] = useState<string>('CONSULTING');
 
   const filteredReports = reports.filter((r) => {
     const matchesSearch =
@@ -78,44 +82,50 @@ export default function ReportsPage() {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'DRAFT':
-        return <Badge variant="secondary">작성중</Badge>;
-      case 'SUBMITTED':
-        return <Badge variant="info">제출됨</Badge>;
-      case 'APPROVED':
-        return <Badge variant="success">승인됨</Badge>;
-      case 'REJECTED':
-        return <Badge variant="error">반려됨</Badge>;
-      default:
-        return <Badge>{status}</Badge>;
-    }
+  const getStatusBadge = (status: ReportStatus) => {
+    const variants: Record<ReportStatus, 'secondary' | 'info' | 'success' | 'error'> = {
+      DRAFT: 'secondary',
+      SUBMITTED: 'info',
+      APPROVED: 'success',
+      REJECTED: 'error',
+    };
+    return <Badge variant={variants[status]}>{REPORT_STATUS_LABELS[status]}</Badge>;
   };
 
-  const getTypeBadge = (type: string) => {
-    switch (type) {
-      case 'CONSULTING':
-        return <Badge variant="primary">컨설팅</Badge>;
-      case 'EVALUATION':
-        return <Badge variant="warning">평가</Badge>;
-      case 'SUMMARY':
-        return <Badge variant="secondary">요약</Badge>;
-      default:
-        return <Badge>{type}</Badge>;
-    }
+  const getTypeBadge = (type: ReportType) => {
+    const variants: Record<ReportType, 'primary' | 'warning' | 'secondary'> = {
+      CONSULTING: 'primary',
+      EVALUATION: 'warning',
+      SUMMARY: 'secondary',
+    };
+    return <Badge variant={variants[type]}>{REPORT_TYPE_LABELS[type]}</Badge>;
+  };
+
+  const handleViewReport = (reportId: string) => {
+    router.push(`/evaluator/reports/${reportId}`);
+  };
+
+  const handleCreateReport = () => {
+    router.push('/evaluator/reports/new');
   };
 
   const columns: Column<Report>[] = [
     {
       key: 'title',
       header: '제목',
-      render: (value) => <span className="font-medium">{value as string}</span>,
+      render: (value, row) => (
+        <button
+          onClick={() => handleViewReport(row.id)}
+          className="font-medium text-blue-600 hover:text-blue-800 hover:underline text-left"
+        >
+          {value as string}
+        </button>
+      ),
     },
     {
       key: 'report_type',
       header: '유형',
-      render: (value) => getTypeBadge(value as string),
+      render: (value) => getTypeBadge(value as ReportType),
     },
     {
       key: 'consultant_name',
@@ -130,7 +140,7 @@ export default function ReportsPage() {
     {
       key: 'status',
       header: '상태',
-      render: (value) => getStatusBadge(value as string),
+      render: (value) => getStatusBadge(value as ReportStatus),
     },
     {
       key: 'author',
@@ -149,7 +159,11 @@ export default function ReportsPage() {
       header: '작업',
       render: (_, row) => (
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleViewReport(row.id)}
+          >
             {row.status === 'DRAFT' ? '편집' : '보기'}
           </Button>
           {row.status === 'APPROVED' && (
@@ -162,11 +176,19 @@ export default function ReportsPage() {
     },
   ];
 
+  // 통계 계산
+  const stats = {
+    total: reports.length,
+    draft: reports.filter((r) => r.status === 'DRAFT').length,
+    submitted: reports.filter((r) => r.status === 'SUBMITTED').length,
+    approved: reports.filter((r) => r.status === 'APPROVED').length,
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">보고서 작성/관리</h1>
-        <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
+        <Button variant="primary" onClick={handleCreateReport}>
           + 새 보고서 작성
         </Button>
       </div>
@@ -176,31 +198,25 @@ export default function ReportsPage() {
         <Card>
           <div className="p-4">
             <div className="text-sm text-gray-500">전체 보고서</div>
-            <div className="text-2xl font-bold text-blue-600">{reports.length}건</div>
+            <div className="text-2xl font-bold text-blue-600">{stats.total}건</div>
           </div>
         </Card>
         <Card>
           <div className="p-4">
             <div className="text-sm text-gray-500">작성중</div>
-            <div className="text-2xl font-bold text-gray-600">
-              {reports.filter((r) => r.status === 'DRAFT').length}건
-            </div>
+            <div className="text-2xl font-bold text-gray-600">{stats.draft}건</div>
           </div>
         </Card>
         <Card>
           <div className="p-4">
             <div className="text-sm text-gray-500">제출됨</div>
-            <div className="text-2xl font-bold text-blue-600">
-              {reports.filter((r) => r.status === 'SUBMITTED').length}건
-            </div>
+            <div className="text-2xl font-bold text-blue-600">{stats.submitted}건</div>
           </div>
         </Card>
         <Card>
           <div className="p-4">
             <div className="text-sm text-gray-500">승인됨</div>
-            <div className="text-2xl font-bold text-green-600">
-              {reports.filter((r) => r.status === 'APPROVED').length}건
-            </div>
+            <div className="text-2xl font-bold text-green-600">{stats.approved}건</div>
           </div>
         </Card>
       </div>
@@ -250,93 +266,6 @@ export default function ReportsPage() {
           />
         </div>
       </Card>
-
-      {/* 새 보고서 작성 모달 */}
-      <Modal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        title="새 보고서 작성"
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              보고서 유형
-            </label>
-            <Select
-              value={newReportType}
-              onChange={(e) => setNewReportType(e.target.value)}
-              options={[
-                { value: 'CONSULTING', label: '컨설팅 보고서' },
-                { value: 'EVALUATION', label: '평가 보고서' },
-                { value: 'SUMMARY', label: '요약 보고서' },
-              ]}
-            />
-          </div>
-
-          {newReportType === 'CONSULTING' && (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  대상 기업
-                </label>
-                <Select
-                  options={[
-                    { value: '', label: '기업 선택...' },
-                    { value: '1', label: '(주)스마트제조' },
-                    { value: '2', label: '대한전자' },
-                    { value: '3', label: '글로벌기계' },
-                  ]}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  담당 컨설턴트
-                </label>
-                <Select
-                  options={[
-                    { value: '', label: '컨설턴트 선택...' },
-                    { value: '1', label: '김철수' },
-                    { value: '2', label: '이영희' },
-                    { value: '3', label: '박민수' },
-                  ]}
-                />
-              </div>
-            </>
-          )}
-
-          {newReportType === 'EVALUATION' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                평가 대상 컨설턴트
-              </label>
-              <Select
-                options={[
-                  { value: '', label: '컨설턴트 선택...' },
-                  { value: '1', label: '김철수' },
-                  { value: '2', label: '이영희' },
-                  { value: '3', label: '박민수' },
-                ]}
-              />
-            </div>
-          )}
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              보고서 제목
-            </label>
-            <Input placeholder="보고서 제목을 입력하세요..." />
-          </div>
-
-          <div className="flex justify-end gap-2 pt-4">
-            <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>
-              취소
-            </Button>
-            <Button variant="primary" onClick={() => setIsCreateModalOpen(false)}>
-              작성 시작
-            </Button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 }

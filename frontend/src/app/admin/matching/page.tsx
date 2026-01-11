@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, Button, Badge, Table, Alert, Select, Modal, Tabs, TabContent, TabButton } from '@/components/ui';
+import { Card, Button, Badge, Table, Alert, Select, Modal } from '@/components/ui';
 import { Column } from '@/components/ui/Table';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
