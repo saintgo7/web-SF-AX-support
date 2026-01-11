@@ -99,14 +99,14 @@ export default function ExpertsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">전문가 관리</h1>
+          <h1 className="text-3xl font-bold text-gray-900">컨설턴트 관리</h1>
           <p className="mt-2 text-gray-600">
-            등록된 전문가를 관리하세요
+            등록된 컨설턴트를 관리하세요
           </p>
         </div>
 
         <Button onClick={() => setIsModalOpen(true)}>
-          전문가 추가
+          컨설턴트 추가
         </Button>
       </div>
 
@@ -114,7 +114,7 @@ export default function ExpertsPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <div className="p-6">
-            <p className="text-sm font-medium text-gray-600">총 전문가</p>
+            <p className="text-sm font-medium text-gray-600">총 컨설턴트</p>
             <p className="text-3xl font-bold text-gray-900 mt-2">
               {expertsData?.length || 0}
             </p>
@@ -153,7 +153,7 @@ export default function ExpertsPage() {
       <Card>
         <div className="p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            전문가 목록
+            컨설턴트 목록
           </h2>
 
           {isLoading ? (
@@ -166,7 +166,7 @@ export default function ExpertsPage() {
               data={expertsData || []}
               keyField="id"
               onRowClick={handleViewDetails}
-              emptyMessage="등록된 전문가가 없습니다."
+              emptyMessage="등록된 컨설턴트가 없습니다."
             />
           )}
         </div>
@@ -179,7 +179,7 @@ export default function ExpertsPage() {
           setIsModalOpen(false);
           setSelectedExpert(null);
         }}
-        title={selectedExpert ? '전문가 상세정보' : '새 전문가 추가'}
+        title={selectedExpert ? '컨설턴트 상세정보' : '새 컨설턴트 추가'}
         size="lg"
       >
         {selectedExpert ? (
@@ -267,7 +267,7 @@ export default function ExpertsPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-gray-600">새 전문가 추가 기능이 준비 중입니다.</p>
+            <p className="text-gray-600">새 컨설턴트 추가 기능이 준비 중입니다.</p>
           </div>
         )}
       </Modal>

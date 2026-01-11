@@ -41,7 +41,7 @@ export default function ApplicationPage() {
       setError(null);
       setIsSubmitting(true);
       await updateExpertProfile.mutateAsync(data);
-      setSuccess('전문가 정보가 저장되었습니다.');
+      setSuccess('컨설턴트 정보가 저장되었습니다.');
     } catch (err: any) {
       setError(err.response?.data?.detail || '저장에 실패했습니다.');
     } finally {
@@ -104,7 +104,7 @@ export default function ApplicationPage() {
       <Card>
         <div className="p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">
-            전문가 기본 정보
+            컨설턴트 기본 정보
           </h2>
 
           <form onSubmit={handleSubmitExpert(onExpertSubmit)} className="space-y-6">

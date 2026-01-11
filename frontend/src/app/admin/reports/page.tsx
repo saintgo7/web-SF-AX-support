@@ -15,7 +15,7 @@ type ReportType = 'summary' | 'experts' | 'evaluations' | 'matchings' | 'perform
 
 const REPORT_OPTIONS: { value: ReportType; label: string }[] = [
   { value: 'summary', label: '전체 현황 요약' },
-  { value: 'experts', label: '전문가 현황' },
+  { value: 'experts', label: '컨설턴트 현황' },
   { value: 'evaluations', label: '평가 결과 분석' },
   { value: 'matchings', label: '매칭 효율 분석' },
 ];
@@ -99,9 +99,9 @@ export default function ReportsPage() {
 
   const formatKey = (key: string): string => {
     const translations: Record<string, string> = {
-      total_experts: '총 전문가',
-      qualified_experts: '자격 보유 전문가',
-      pending_experts: '심사 대기 전문가',
+      total_experts: '총 컨설턴트',
+      qualified_experts: '자격 보유 컨설턴트',
+      pending_experts: '심사 대기 컨설턴트',
       total_questions: '총 문항',
       total_answers: '총 답변',
       graded_answers: '채점 완료',
@@ -167,7 +167,7 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <div className="p-6">
-            <p className="text-sm font-medium text-gray-600">전문가 수</p>
+            <p className="text-sm font-medium text-gray-600">컨설턴트 수</p>
             <p className="text-3xl font-bold text-blue-600 mt-2">
               {summaryStats?.total_experts || 0}
             </p>
@@ -317,10 +317,10 @@ export default function ReportsPage() {
                     />
                   </svg>
                 </div>
-                <h3 className="font-medium text-gray-900">전문가 현황</h3>
+                <h3 className="font-medium text-gray-900">컨설턴트 현황</h3>
               </div>
               <p className="text-sm text-gray-600 mb-4">
-                등록된 전문가들의 자격, 경력 분포를 분석하세요.
+                등록된 컨설턴트들의 자격, 경력 분포를 분석하세요.
               </p>
               <Button
                 size="sm"

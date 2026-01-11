@@ -124,7 +124,7 @@ export default function MatchingPage() {
     },
     {
       key: 'expert_id',
-      header: '전문가',
+      header: '컨설턴트',
       render: (_, row) => (
         <div>
           <p className="font-medium">{row.expert_id.slice(0, 8)}</p>
@@ -225,7 +225,7 @@ export default function MatchingPage() {
 
   const handleManualMatch = () => {
     if (!manualExpert || !manualDemand) {
-      setMessage({ type: 'error', text: '전문가와 수요를 모두 선택해주세요.' });
+      setMessage({ type: 'error', text: '컨설턴트와 수요를 모두 선택해주세요.' });
       return;
     }
 
@@ -268,7 +268,7 @@ export default function MatchingPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">매칭 관리</h1>
-          <p className="mt-2 text-gray-600">전문가와 기업 수요를 매칭하세요</p>
+          <p className="mt-2 text-gray-600">컨설턴트와 기업 수요를 매칭하세요</p>
         </div>
       </div>
 
@@ -370,8 +370,8 @@ export default function MatchingPage() {
                 />
 
                 <Select
-                  label="전문가 선택"
-                  placeholder="전문가를 선택하세요"
+                  label="컨설턴트 선택"
+                  placeholder="컨설턴트를 선택하세요"
                   options={expertOptions}
                   value={manualExpert}
                   onChange={(e) => setManualExpert(e.target.value)}
@@ -389,7 +389,7 @@ export default function MatchingPage() {
               </div>
 
               <p className="text-sm text-gray-600 mt-4">
-                수동으로 특정 전문가를 수요에 매칭하려면 위에서 선택하세요.
+                수동으로 특정 컨설턴트를 수요에 매칭하려면 위에서 선택하세요.
               </p>
             </div>
           </Card>
@@ -401,9 +401,9 @@ export default function MatchingPage() {
           {/* Demand Selection */}
           <Card>
             <div className="p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">AI 전문가 추천</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">AI 컨설턴트 추천</h2>
               <p className="text-gray-600 mb-4">
-                수요를 선택하면 AI가 가장 적합한 전문가를 추천합니다.
+                수요를 선택하면 AI가 가장 적합한 컨설턴트를 추천합니다.
                 추천 알고리즘은 전문분야(40%), 평가성과(20%), 자격검증(15%), 경력(15%), 가용성(10%)을 종합적으로 분석합니다.
               </p>
 
@@ -436,14 +436,14 @@ export default function MatchingPage() {
                 <div className="flex items-center justify-center h-64">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">AI가 전문가를 분석하고 있습니다...</p>
+                    <p className="mt-4 text-gray-600">AI가 컨설턴트를 분석하고 있습니다...</p>
                   </div>
                 </div>
               ) : recommendationsData?.candidates && recommendationsData.candidates.length > 0 ? (
                 <>
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-gray-900">
-                      추천 전문가 ({recommendationsData.total_candidates}명)
+                      추천 컨설턴트 ({recommendationsData.total_candidates}명)
                     </h3>
                     <span className="text-sm text-gray-500">
                       알고리즘 버전: {recommendationsData.algorithm_version}
@@ -479,7 +479,7 @@ export default function MatchingPage() {
                     </svg>
                     <h3 className="mt-4 text-lg font-medium text-gray-900">추천 결과 없음</h3>
                     <p className="mt-2 text-gray-500">
-                      현재 조건에 맞는 전문가가 없습니다. 최소 점수 기준을 낮춰보세요.
+                      현재 조건에 맞는 컨설턴트가 없습니다. 최소 점수 기준을 낮춰보세요.
                     </p>
                   </div>
                 </Card>
@@ -565,7 +565,7 @@ export default function MatchingPage() {
           {/* Top Matched Experts */}
           <Card>
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">매칭 많은 전문가 TOP 5</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">매칭 많은 컨설턴트 TOP 5</h3>
               <div className="space-y-3">
                 {analyticsData?.top_matched_experts?.map((expert, idx) => (
                   <div key={expert.expert_id} className="flex items-center justify-between">

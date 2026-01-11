@@ -3,10 +3,10 @@ export default function HomePage() {
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-center font-mono text-sm">
         <h1 className="text-4xl font-bold text-center mb-8">
-          AX 코칭단 평가 시스템
+          AX 코칭단 관리 시스템
         </h1>
         <p className="text-center text-secondary-500">
-          스마트공장 AX 코칭단 전문가 평가 및 매칭 시스템
+          스마트공장 AX 코칭단 컨설턴트 평가 및 매칭 시스템
         </p>
 
         <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-3 lg:text-left gap-4 mt-12">

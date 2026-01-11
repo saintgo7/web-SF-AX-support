@@ -115,7 +115,7 @@ export default function AdminDashboard() {
           <div className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">전문가 수</p>
+                <p className="text-sm font-medium text-gray-600">컨설턴트 수</p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">
                   {stats?.total_experts ?? 0}
                 </p>
@@ -239,8 +239,8 @@ export default function AdminDashboard() {
               <svg className="h-6 w-6 text-blue-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
               </svg>
-              <h3 className="font-medium text-gray-900">전문가 관리</h3>
-              <p className="text-sm text-gray-600 mt-1">전문가를 관리하세요</p>
+              <h3 className="font-medium text-gray-900">컨설턴트 관리</h3>
+              <p className="text-sm text-gray-600 mt-1">컨설턴트를 관리하세요</p>
             </button>
 
             <button
@@ -262,7 +262,7 @@ export default function AdminDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
               </svg>
               <h3 className="font-medium text-gray-900">매칭 관리</h3>
-              <p className="text-sm text-gray-600 mt-1">전문가-기업 매칭</p>
+              <p className="text-sm text-gray-600 mt-1">컨설턴트-기업 매칭</p>
             </button>
 
             <button

@@ -120,7 +120,7 @@ export default function ApplicantDashboard() {
         <Card>
           <div className="p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              전문가 정보
+              컨설턴트 정보
             </h3>
             <dl className="space-y-3">
               <div>

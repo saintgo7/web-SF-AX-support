@@ -157,7 +157,7 @@ export default function PendingPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-gray-900">채점 대기 목록</h1>
-        <p className="mt-2 text-gray-600">채점이 필요한 전문가 답변 목록입니다</p>
+        <p className="mt-2 text-gray-600">채점이 필요한 컨설턴트 답변 목록입니다</p>
       </div>
 
       {error && (
@@ -208,7 +208,7 @@ export default function PendingPage() {
                         </Badge>
                       </div>
                       <p className="text-sm text-gray-600">
-                        전문가 ID: {expert.expert_id.slice(0, 8)}
+                        컨설턴트 ID: {expert.expert_id.slice(0, 8)}
                       </p>
                       <p className="text-sm text-gray-600 mt-1">
                         총 배점: {expert.total_max_score}점
@@ -275,7 +275,7 @@ export default function PendingPage() {
                   {/* Answer Display */}
                   <div className="mb-6">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      전문가 답변
+                      컨설턴트 답변
                     </label>
                     <div className="bg-blue-50 p-4 rounded-lg whitespace-pre-wrap">
                       <p className="text-gray-900">

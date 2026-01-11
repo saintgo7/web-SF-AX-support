@@ -29,14 +29,16 @@ const menuItems: Record<
   EVALUATOR: {
     main: [
       { label: '대시보드', path: '/evaluator/dashboard' },
-      { label: '채점 대기', path: '/evaluator/pending' },
-      { label: '채점 완료', path: '/evaluator/history' },
+      { label: '컨설턴트 현황', path: '/evaluator/consultants' },
+      { label: '매칭 현황', path: '/evaluator/matching' },
+      { label: '보고서 작성', path: '/evaluator/reports' },
+      { label: '평가 채점', path: '/evaluator/grading' },
     ],
   },
   ADMIN: {
     main: [
       { label: '대시보드', path: '/admin/dashboard' },
-      { label: '전문가 관리', path: '/admin/experts' },
+      { label: '컨설턴트 관리', path: '/admin/experts' },
       { label: '문항 관리', path: '/admin/questions' },
       { label: '매칭 관리', path: '/admin/matching' },
       { label: '리포트', path: '/admin/reports' },

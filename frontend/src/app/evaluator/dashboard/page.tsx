@@ -123,14 +123,14 @@ export default function EvaluatorDashboard() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            평가위원 대시보드
+            컨설팅 위원 대시보드
           </h1>
           <p className="mt-2 text-gray-600">
             환영합니다, {user?.name}님
           </p>
         </div>
         <Link
-          href="/evaluator/pending"
+          href="/evaluator/grading"
           className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           채점 시작하기
@@ -182,7 +182,7 @@ export default function EvaluatorDashboard() {
         />
 
         <StatCard
-          title="전문가 현황"
+          title="컨설턴트 현황"
           value={`${stats?.fully_graded_experts || 0}/${stats?.experts_with_submissions || 0}`}
           subtitle="채점 완료/제출"
           iconBg="bg-yellow-100"
@@ -240,8 +240,8 @@ export default function EvaluatorDashboard() {
         <Card>
           <div className="p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">전문가별 대기 현황</h2>
-              <Link href="/evaluator/pending" className="text-sm text-blue-600 hover:underline">
+              <h2 className="text-xl font-semibold text-gray-900">컨설턴트별 대기 현황</h2>
+              <Link href="/evaluator/grading" className="text-sm text-blue-600 hover:underline">
                 전체 보기
               </Link>
             </div>
@@ -253,7 +253,7 @@ export default function EvaluatorDashboard() {
                     <p className="text-xs text-gray-500">{expert.pending_count}개 답변 대기</p>
                   </div>
                   <Link
-                    href={`/evaluator/pending?expert_id=${expert.expert_id}`}
+                    href={`/evaluator/grading?expert_id=${expert.expert_id}`}
                     className="text-sm text-blue-600 hover:underline"
                   >
                     채점하기

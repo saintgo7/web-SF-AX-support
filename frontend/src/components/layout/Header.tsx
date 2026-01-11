@@ -29,7 +29,7 @@ export default function Header({ user }: HeaderProps) {
               onClick={() => router.push('/')}
               className="text-xl font-bold text-blue-600 hover:text-blue-700"
             >
-              AX Coaching Evaluation
+              AX 코칭단 관리 시스템
             </button>
           </div>
 
@@ -74,16 +74,28 @@ export default function Header({ user }: HeaderProps) {
                       대시보드
                     </button>
                     <button
-                      onClick={() => router.push('/evaluator/pending')}
+                      onClick={() => router.push('/evaluator/consultants')}
                       className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium"
                     >
-                      채점 대기
+                      컨설턴트 현황
                     </button>
                     <button
-                      onClick={() => router.push('/evaluator/history')}
+                      onClick={() => router.push('/evaluator/matching')}
                       className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium"
                     >
-                      채점 완료
+                      매칭 현황
+                    </button>
+                    <button
+                      onClick={() => router.push('/evaluator/reports')}
+                      className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium"
+                    >
+                      보고서 작성
+                    </button>
+                    <button
+                      onClick={() => router.push('/evaluator/grading')}
+                      className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium"
+                    >
+                      평가 채점
                     </button>
                   </>
                 )}
@@ -99,7 +111,7 @@ export default function Header({ user }: HeaderProps) {
                       onClick={() => router.push('/admin/experts')}
                       className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium"
                     >
-                      전문가 관리
+                      컨설턴트 관리
                     </button>
                     <button
                       onClick={() => router.push('/admin/questions')}

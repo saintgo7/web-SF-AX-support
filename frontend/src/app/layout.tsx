@@ -6,8 +6,8 @@ import Providers from './providers';
 const inter = Inter({ subsets: ['latin'], variable: '--font-pretendard' });
 
 export const metadata: Metadata = {
-  title: 'AX 코칭단 평가 시스템',
-  description: '스마트공장 AX 코칭단 전문가 평가 및 매칭 시스템',
+  title: 'AX 코칭단 관리 시스템',
+  description: '스마트공장 AX 코칭단 컨설턴트 평가 및 매칭 시스템',
 };
 
 export default function RootLayout({
