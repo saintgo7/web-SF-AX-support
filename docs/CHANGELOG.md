@@ -4,6 +4,25 @@
 
 ---
 
+## [2026-01-11] - Table 컴포넌트 버그 수정
+
+### 커밋 정보
+- **커밋 해시**: `cd818d8`
+- **커밋 메시지**: `fix: Table 컴포넌트 사용 패턴 수정 (evaluator 페이지들)`
+
+### 수정 내용
+- 잘못된 Compound Component 패턴(`Table.Head`, `Table.Row` 등)을 올바른 props 기반 패턴으로 수정
+- `columns`, `data`, `keyField` props 사용 패턴으로 통일
+- `Column<T>` 타입 정의 추가
+
+### 수정된 파일
+- `frontend/src/app/evaluator/consultants/page.tsx`
+- `frontend/src/app/evaluator/matching/page.tsx`
+- `frontend/src/app/evaluator/reports/page.tsx`
+- `frontend/src/app/evaluator/grading/page.tsx`
+
+---
+
 ## [2026-01-11] - 컨설팅 위원 중심 UI/UX 개편
 
 ### 커밋 정보
