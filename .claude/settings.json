@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat /Users/saint/01_DEV/26-SmartFactotyAX_Support/.claude/DEV_LOG.md"
+          }
+        ]
+      }
+    ]
+  }
+}
