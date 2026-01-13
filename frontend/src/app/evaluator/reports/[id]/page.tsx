@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Card, Badge, Button, Input, Select, Textarea } from '@/components/ui';
 import {
   ReportDetail,
@@ -13,6 +13,8 @@ import {
   REPORT_TYPE_LABELS,
   REPORT_STATUS_LABELS,
 } from '@/types/report';
+import ReportPrintLayout from '@/components/report/ReportPrintLayout';
+import { generatePDF, generateReportFilename } from '@/lib/utils/pdf';
 
 // Mock 데이터 - 실제로는 API에서 가져옴
 const mockReportDetails: Record<string, ReportDetail> = {
@@ -93,12 +95,16 @@ const mockReportDetails: Record<string, ReportDetail> = {
 export default function ReportDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const reportId = params.id as string;
+  const action = searchParams.get('action');
 
   const [report, setReport] = useState<ReportDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
+  const printRef = useRef<HTMLDivElement>(null);
 
   // 보고서 데이터 로드
   useEffect(() => {
@@ -114,6 +120,33 @@ export default function ReportDetailPage() {
     };
     loadReport();
   }, [reportId]);
+
+  // PDF 다운로드 핸들러
+  const handleDownloadPDF = useCallback(async () => {
+    if (!report || !printRef.current) return;
+
+    setIsGeneratingPDF(true);
+    try {
+      const filename = generateReportFilename(report.title, report.created_at);
+      await generatePDF(printRef.current, { filename });
+    } catch (error) {
+      console.error('PDF 생성 오류:', error);
+      alert('PDF 생성 중 오류가 발생했습니다.');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  }, [report]);
+
+  // URL 파라미터로 PDF 다운로드가 요청된 경우 자동 실행
+  useEffect(() => {
+    if (action === 'pdf' && report?.status === 'APPROVED' && printRef.current && !isGeneratingPDF) {
+      // 약간의 딜레이 후 PDF 생성 (DOM 렌더링 대기)
+      const timer = setTimeout(() => {
+        handleDownloadPDF();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [action, report, isGeneratingPDF, handleDownloadPDF]);
 
   const isEditable = report?.status === 'DRAFT';
 
@@ -239,7 +272,13 @@ export default function ReportDetailPage() {
             </>
           )}
           {report.status === 'APPROVED' && (
-            <Button variant="secondary">PDF 다운로드</Button>
+            <Button
+              variant="secondary"
+              onClick={handleDownloadPDF}
+              disabled={isGeneratingPDF}
+            >
+              {isGeneratingPDF ? 'PDF 생성 중...' : 'PDF 다운로드'}
+            </Button>
           )}
         </div>
       </div>
@@ -326,6 +365,21 @@ export default function ReportDetailPage() {
         </div>
       ) : (
         <ReportPreview report={report} />
+      )}
+
+      {/* 숨겨진 PDF 출력용 레이아웃 */}
+      {report.status === 'APPROVED' && (
+        <div
+          ref={printRef}
+          style={{
+            position: 'absolute',
+            left: '-9999px',
+            top: 0,
+            visibility: 'hidden',
+          }}
+        >
+          <ReportPrintLayout report={report} />
+        </div>
       )}
     </div>
   );

@@ -105,6 +105,11 @@ export default function ReportsPage() {
     router.push(`/evaluator/reports/${reportId}`);
   };
 
+  const handleDownloadPDF = (reportId: string) => {
+    // 상세 페이지로 이동하면서 PDF 다운로드 트리거
+    router.push(`/evaluator/reports/${reportId}?action=pdf`);
+  };
+
   const handleCreateReport = () => {
     router.push('/evaluator/reports/new');
   };
@@ -167,7 +172,11 @@ export default function ReportsPage() {
             {row.status === 'DRAFT' ? '편집' : '보기'}
           </Button>
           {row.status === 'APPROVED' && (
-            <Button variant="secondary" size="sm">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => handleDownloadPDF(row.id)}
+            >
               PDF
             </Button>
           )}
